@@ -1,5 +1,5 @@
 
-
+const { ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app=express();
@@ -45,6 +45,21 @@ async function run() {
         const result = await services.insertOne(serviceInfo);
         res.send(result)
     })
+
+    app.get('/serviceInfo',async(req,res)=>{
+      const cursor=services.find();
+      const result=await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/serviceInfo/:id',async(req,res)=>{
+      const id=req.params.id;
+      console.log(id)
+      const query = {_id: new ObjectId(id) };
+      const result = await services.findOne(query);
+      res.send(result);
+    })    
+    
 
 
 
