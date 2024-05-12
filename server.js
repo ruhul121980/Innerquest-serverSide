@@ -111,6 +111,37 @@ async function run() {
     }
 });
 
+app.delete('/serviceInfo/:id',async(req,res)=>{
+  const id=req.params.id;
+  console.log("delete",id);
+  const query={_id:new ObjectId(id)}
+  const result=await services.deleteOne(query)
+  res.send(result)
+}
+)
+
+app.put('/serviceInfo/:id',async(req,res)=>{
+  const id=req.params.id;
+  const user=req.body;
+  console.log(user)
+  const filter={_id:new ObjectId(id)}
+  const options={upsert:true}
+  const updatedUser={
+    
+    $set:{
+      image_url:user.image_url,
+      service_name:user.service_name,
+      price:user.price,
+      service_area:user.service_area,
+      description:user.description
+      
+     
+    }
+  }
+  const result=await services.updateOne(filter,updatedUser,options)
+  res.send(result)
+})
+
     
     
 
