@@ -1,5 +1,6 @@
+const { ObjectId } = require('bson');
 
-const { ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 const app=express();
@@ -36,14 +37,20 @@ async function run() {
 
     const database = client.db("counselling");
     const services = database.collection("services");
+    const booking=database.collection("booking");
     
 
 
     app.post('/serviceInfo',async(req,res)=>{
         const serviceInfo=req.body;
-        console.log('service info:',serviceInfo)
         const result = await services.insertOne(serviceInfo);
         res.send(result)
+    })
+
+    app.post('/booking',async(req,res)=>{
+      const bookingInfo=req.body;
+      const result=await booking.insertOne(bookingInfo);
+      res.send(result);
     })
 
     app.get('/serviceInfo',async(req,res)=>{
@@ -52,13 +59,59 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/serviceInfo/:id',async(req,res)=>{
-      const id=req.params.id;
-      console.log(id)
-      const query = {_id: new ObjectId(id) };
-      const result = await services.findOne(query);
-      res.send(result);
-    })    
+    // app.get('/serviceInfo/:id',async(req,res)=>{
+    //   const id=req.params.id;
+    //   const query = {_id: new ObjectId(id) };
+    //   const result = await services.findOne(query);
+    //   res.send(result);
+    // })  
+    
+
+    app.get('/serviceInfo/:id', async (req, res) => {
+      try {
+          const id = req.params.id;
+          
+          // Validate if 'id' is a valid ObjectId
+          if (!ObjectId.isValid(id)) {
+              return res.status(400).send('Invalid ID format');
+          }
+  
+          const query = { _id: new ObjectId(id) };
+          const result = await services.findOne(query);
+  
+          if (!result) {
+              return res.status(404).send('Service not found');
+          }
+  
+          res.send(result);
+      } catch (error) {
+          console.error('Error in fetching service information:', error);
+          res.status(500).send('Internal Server Error');
+      }
+  });
+  
+  app.get('/matchServiceInfo',async(req,res)=>{
+    const cursor=services.find();
+    const result=await cursor.toArray();
+    res.send(result);
+  })
+
+  app.get('/matchServiceInfo/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+        console.log("Email:", email);
+        
+        const query = { 'email': email };
+        const result = await services.find(query).toArray(); // Use await to wait for the result
+        
+        res.send(result);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+    
     
 
 
