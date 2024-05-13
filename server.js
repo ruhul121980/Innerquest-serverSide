@@ -1,14 +1,23 @@
 const { ObjectId } = require('bson');
-
+const { MongoClient, ServerApiVersion, Admin } = require('mongodb');
 // const { ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
 const app=express();
 const port=process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion, Admin } = require('mongodb');
 
-app.use(cors());
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://innerquest-counseling-services.web.app",
+      "https://innerquest-counseling-services.firebaseapp.com",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // InnerQuestCounselingServices
