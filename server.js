@@ -3,6 +3,7 @@ const { ObjectId } = require('bson');
 // const { ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 const app=express();
 const port=process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, Admin } = require('mongodb');
@@ -18,7 +19,7 @@ app.use(express.json());
 
 
 
-const uri = "mongodb+srv://InnerQuestCounselingServices:VWCO2ZIFW9s3JX6D@cluster0.v1zto12.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.v1zto12.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -32,7 +33,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 
     const database = client.db("counselling");
@@ -111,6 +112,22 @@ async function run() {
     }
 });
 
+
+app.get('/bookedService/:email', async (req, res) => {
+  try {
+      const email = req.params.email;
+      console.log("Email:", email);
+      
+      const query = { 'currentUserEmail': email };
+      const result = await booking.find(query).toArray(); // Use await to wait for the result
+      
+      res.send(result);
+  } catch (error) {
+      console.error("Error:", error);
+      res.status(500).send("Internal Server Error");
+  }
+});
+
 app.delete('/serviceInfo/:id',async(req,res)=>{
   const id=req.params.id;
   console.log("delete",id);
@@ -153,7 +170,7 @@ app.put('/serviceInfo/:id',async(req,res)=>{
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
