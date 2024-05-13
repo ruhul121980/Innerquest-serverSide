@@ -20,8 +20,7 @@ app.use(
 );
 app.use(express.json());
 
-// InnerQuestCounselingServices
-// VWCO2ZIFW9s3JX6D
+
 
 
 
@@ -109,7 +108,7 @@ async function run() {
   app.get('/matchServiceInfo/:email', async (req, res) => {
     try {
         const email = req.params.email;
-        console.log("Email:", email);
+        // console.log("Email:", email);
         
         const query = { 'email': email };
         const result = await services.find(query).toArray(); // Use await to wait for the result
@@ -125,10 +124,10 @@ async function run() {
 app.get('/bookedService/:email', async (req, res) => {
   try {
       const email = req.params.email;
-      console.log("Email:", email);
+      // console.log("Email:", email);
       
       const query = { 'currentUserEmail': email };
-      const result = await booking.find(query).toArray(); // Use await to wait for the result
+      const result = await booking.find(query).toArray(); 
       
       res.send(result);
   } catch (error) {
@@ -137,9 +136,26 @@ app.get('/bookedService/:email', async (req, res) => {
   }
 });
 
+
+app.get('/providerBookedService/:providerEmail', async (req, res) => {
+  try {
+      const providerEmail = req.params.providerEmail;
+      // console.log("Email:", email);
+      
+      const query = { 'email': providerEmail };
+      const result = await booking.find(query).toArray(); 
+      
+      res.send(result);
+  } catch (error) {
+      console.error("Error:", error);
+      res.status(500).send("Internal Server Error");
+  }
+});
+
+
 app.delete('/serviceInfo/:id',async(req,res)=>{
   const id=req.params.id;
-  console.log("delete",id);
+  // console.log("delete",id);
   const query={_id:new ObjectId(id)}
   const result=await services.deleteOne(query)
   res.send(result)
@@ -167,6 +183,29 @@ app.put('/serviceInfo/:id',async(req,res)=>{
   const result=await services.updateOne(filter,updatedUser,options)
   res.send(result)
 })
+
+
+
+app.patch('/providerBookedService2/:id', async (req, res) => {
+  const id = req.params.id;
+  const newData = req.body;
+  console.log(newData.newStatus);
+  console.log(id);
+  const filter = { _id: id };
+  const options = { upsert: true };
+  const updatedUser = {
+      $set: {
+          serviceStatus: newData.newStatus
+      }
+  };
+  try {
+      const result = await booking.updateOne(filter, updatedUser, options);
+      res.send(result);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+  }
+});
 
     
     
