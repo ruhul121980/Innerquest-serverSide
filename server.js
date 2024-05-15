@@ -68,6 +68,28 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/serviceInfo2', async (req, res) => {
+      try {
+        const searchText = req.query.search || ''; // Get the search text from query parameter
+        const query = {}; // Initialize an empty query object
+    
+        // If search text is provided, add a regex condition to match service names from the beginning
+        if (searchText) {
+          query.service_name = { $regex: `^${searchText}`, $options: 'i' }; // Case-insensitive search
+        }
+    
+        const cursor = services.find(query); // Use the query object to filter services
+        const result = await cursor.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
+    
+    
+    
+
     // app.get('/serviceInfo/:id',async(req,res)=>{
     //   const id=req.params.id;
     //   const query = {_id: new ObjectId(id) };
