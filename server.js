@@ -162,7 +162,7 @@ app.get('/bookedService/:email', async (req, res) => {
 app.get('/providerBookedService/:providerEmail', async (req, res) => {
   try {
       const providerEmail = req.params.providerEmail;
-      // console.log("Email:", email);
+     
       
       const query = { 'email': providerEmail };
       const result = await booking.find(query).toArray(); 
@@ -177,7 +177,7 @@ app.get('/providerBookedService/:providerEmail', async (req, res) => {
 
 app.delete('/serviceInfo/:id',async(req,res)=>{
   const id=req.params.id;
-  // console.log("delete",id);
+  
   const query={_id:new ObjectId(id)}
   const result=await services.deleteOne(query)
   res.send(result)
