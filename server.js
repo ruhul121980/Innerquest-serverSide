@@ -47,6 +47,7 @@ async function run() {
     const database = client.db("counselling");
     const services = database.collection("services");
     const booking=database.collection("booking");
+    const feedback=database.collection("feedback");
     
 
 
@@ -56,6 +57,13 @@ async function run() {
         res.send(result)
     })
 
+    app.post('/feedback',async(req,res)=>{
+      const feedbackInfo=req.body;
+      const result = await feedback.insertOne(feedbackInfo);
+      res.send(result)
+      console.log(feedbackInfo)
+  })
+
     app.post('/booking',async(req,res)=>{
       const bookingInfo=req.body;
       const result=await booking.insertOne(bookingInfo);
@@ -64,6 +72,11 @@ async function run() {
 
     app.get('/serviceInfo',async(req,res)=>{
       const cursor=services.find();
+      const result=await cursor.toArray();
+      res.send(result);
+    })
+    app.get('/userFeedback',async(req,res)=>{
+      const cursor=feedback.find();
       const result=await cursor.toArray();
       res.send(result);
     })
